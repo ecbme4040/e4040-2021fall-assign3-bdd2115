@@ -17,13 +17,32 @@ def LSTM_step(cell_inputs, cell_states, kernel, recurrent_kernel, bias):
     :return: current hidden state, and a list of hidden state and cell state. For details check TensorFlow LSTMCell class.
     """
     
-    
     ###################################################
     # TODO:      INSERT YOUR CODE BELOW               #
     # params                                          #
     ###################################################
-    
-    print('./utils/LSTM_step.py not implemented!') # delete me
+    def sigmoid(x):
+        return 1 / (1 + tf.exp(-x))
+
+    def tanh(x):
+        return (tf.exp(x) - tf.exp(-x)) / (tf.exp(x) + tf.exp(-x))
+
+    h_tml = cell_states[0]
+    c_tml = cell_states[1]
+
+    z = tf.matmul(cell_inputs, kernel)
+    z += tf.matmul(h_tml, recurrent_kernel)
+    z += bias
+
+    z0, z1, z2, z3 = tf.split(z, 4, axis=1)
+
+    forget = sigmoid(z0)
+    input = sigmoid(z1)
+    cell_hat = tanh(z2)
+    output = sigmoid(z3)
+    ct = forget * c_tml + input * cell_hat
+    ht = tanh(ct) * output
+    return ht, [ht, ct]
     
     ###################################################
     # END TODO                                        #
